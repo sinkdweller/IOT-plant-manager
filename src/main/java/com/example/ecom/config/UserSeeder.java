@@ -5,8 +5,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import com.example.ecom.repo.UserRepo;
 import com.example.ecom.entity.User;
-@Component
 
+@Component
 public class UserSeeder implements CommandLineRunner{
 
     private final UserRepo userRepo;

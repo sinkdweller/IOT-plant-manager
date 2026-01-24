@@ -36,14 +36,14 @@ public class AuthenticationService {
     }
 
     public User authenticate(LoginUserDto input) {
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        input.getEmail(),
-                        input.getPassword()
-                )
-        );
+    authenticationManager.authenticate(
+            new UsernamePasswordAuthenticationToken(
+                    input.getUsername(), // <--- Change this
+                    input.getPassword()
+            )
+    );
 
-        return userRepo.findByEmail(input.getEmail())
+    return userRepo.findByUsername(input.getUsername()) // <--- Change this
                 .orElseThrow();
     }
 }

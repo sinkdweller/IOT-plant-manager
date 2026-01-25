@@ -12,14 +12,13 @@ public class UserRegisterService {
         this.passwordEncoder=passwordEncoder;
         this.userRepo = userRepo;
     }
-    public void createUser(String username, String rawPassword, String email) {
+    public void createUser(String username, String rawPassword) {
         User user = new User();
         user.setUsername(username);
         
         String hashedPassword = passwordEncoder.encode(rawPassword);
         user.setPassword(hashedPassword);
         
-        user.setEmail(email);
         userRepo.save(user);
     }
 }

@@ -29,7 +29,6 @@ public class AuthenticationService {
     public User signup(RegisterUserDto input) {
         User user = new User();
                 user.setUsername(input.getUsername());
-                user.setEmail(input.getEmail());
                 user.setPassword(passwordEncoder.encode(input.getPassword()));
 
         return userRepo.save(user);
@@ -38,12 +37,12 @@ public class AuthenticationService {
     public User authenticate(LoginUserDto input) {
     authenticationManager.authenticate(
             new UsernamePasswordAuthenticationToken(
-                    input.getUsername(), // <--- Change this
+                    input.getUsername(), 
                     input.getPassword()
             )
     );
 
-    return userRepo.findByUsername(input.getUsername()) // <--- Change this
+    return userRepo.findByUsername(input.getUsername()) 
                 .orElseThrow();
     }
 }

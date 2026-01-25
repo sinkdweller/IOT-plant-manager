@@ -19,7 +19,6 @@ public class UserSeeder implements CommandLineRunner{
 
     private final String initUsername = "InitialUsername";
     private final String initPassword = "InitialPassword";
-    private final String initEmail = "InitialEmail@email.com";
 
 
     @Override
@@ -28,7 +27,6 @@ public class UserSeeder implements CommandLineRunner{
             User user = new User();
             user.setUsername(initUsername);
             user.setPassword(passwordEncoder.encode(initPassword));
-            user.setEmail(initEmail);
             userRepo.save(user);
             System.out.println("Database seeded with Username: " + initUsername + " Password: " + initPassword);
         }

@@ -31,7 +31,7 @@ public class SecurityConfig {
 
 
    @Bean
-public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
     http
         // disable CSRF for Postman/IoT tests
         .csrf(csrf -> csrf.disable()) 
@@ -60,13 +60,16 @@ public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Excepti
         CorsConfiguration configuration = new CorsConfiguration();
 
         //localhost:4200 common for Angular
-        configuration.setAllowedOrigins(List.of("http://localhost:8005", "http://localhost:4200"));
+        configuration.setAllowedOrigins(List.of(
+        "http://localhost:8080", 
+        "http://127.0.0.1:8080",
+        "http://localhost:4200" 
+    ));
         configuration.setAllowedMethods(List.of("GET","POST", "PUT", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(List.of("Authorization","Content-Type"));
-
+        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "X-Requested-With"));
+        configuration.setAllowCredentials(true);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
-
         return source;
     }
 }

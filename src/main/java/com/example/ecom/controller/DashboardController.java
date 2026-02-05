@@ -9,7 +9,7 @@ import com.example.ecom.repo.SensorReadingRepo;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-
+import com.example.ecom.responses.SensorReadingResponse;
 @RestController
 public class DashboardController {
     private final SensorReadingRepo readingRepo;
@@ -17,12 +17,21 @@ public class DashboardController {
         this.readingRepo=readingRepo;
     }
     @GetMapping("/api/readings")
-    public Page<SensorReading> getReadings(
+    public Page<SensorReadingResponse> getReadings(
         @RequestParam(defaultValue = "0") int page,
         @RequestParam(defaultValue = "10") int size
     ) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("capturedAt").descending());
-        return readingRepo.findAll(pageable);
+        Page<SensorReading> readings = readingRepo.findAll(pageable);
+
+        return readings.map(a->
+            new SensorReadingResponse(
+                a.getDevice().getName(),
+                a.getSoilMoisture(),
+                a.getTemperature(),
+                a.getCapturedAt()
+            )
+        );
     }
         
 }

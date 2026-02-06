@@ -1,67 +1,67 @@
 <html>
 <head>
-<style>
-    body {
-          font-family: arial, sans-serif;
-    }
-    table {
-    border-collapse: collapse;
-    width: 100%;
-    }
+    <style>
+        body {
+            font-family: arial, sans-serif;
+        }
+        table {
+        border-collapse: collapse;
+        width: 100%;
+        }
 
-    td, th {
-    border: 1px solid #dddddd;
-    text-align: left;
-    padding: 8px;
-    }
+        td, th {
+        border: 1px solid #dddddd;
+        text-align: left;
+        padding: 8px;
+        }
 
-    tr:nth-child(even) {
-    background-color: #dddddd;
-    }
-    .vertical-contain {
-        margin-left: 20px;
-        margin-right: 20px;
+        tr:nth-child(even) {
+        background-color: #dddddd;
+        }
+        .vertical-contain {
+            margin-left: 20px;
+            margin-right: 20px;
 
-        padding-left:20px;
-        padding-right:20px;
-        align-items: center;
-        display: flex;
-        flex-direction: column;
-    }
-    .horizontal-contain{
-        display: flex;
-        flex-direction: row;
-    }
-</style>
-<script src="/navloader.js" defer></script>
+            padding-left:20px;
+            padding-right:20px;
+            align-items: center;
+            display: flex;
+            flex-direction: column;
+        }
+        .horizontal-contain{
+            display: flex;
+            flex-direction: row;
+        }
+    </style>
+    <script src="/navloader.js" defer></script>
 </head>
 <body>
 
-<div class="vertical-contain">
-        <h2>Data DashBoard</h2>
+    <div class="vertical-contain">
+            <h2>Data DashBoard</h2>
 
-    <table id="dashboard-table">
-        <thead> 
-            <tr>
-            <th>Device</th>
-            <th>Temperature</th>
-            <th>Soil Moisture</th>
-            <th>Captured At</th>
+        <table id="dashboard-table">
+            <thead> 
+                <tr>
+                <th>Device</th>
+                <th>Temperature</th>
+                <th>Soil Moisture</th>
+                <th>Captured At</th>
 
-        </tr>
-        </thead>
-        <tbody id="dashboard-table-body">
+            </tr>
+            </thead>
+            <tbody id="dashboard-table-body">
 
-        </tbody>
+            </tbody>
 
-    </table>
-    <p id="pageNumber"></p>
-    <div class="horizontal-contain">
-        <button id="prevBtn" onclick="lastPage()">Back</button>
-        <button id="nextBtn" onclick="nextPage()">Next</button>
+        </table>
+        <p id="pageNumber"></p>
+        <div class="horizontal-contain">
+            <button id="prevBtn" onclick="lastPage()">Back</button>
+            <button id="nextBtn" onclick="nextPage()">Next</button>
+        </div>
+        
     </div>
-    
-</div>
 
 </body>
 

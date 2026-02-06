@@ -15,7 +15,7 @@ async function loadNavbar() {
         else if (path.includes('dashboard.html')) {
             btn.innerHTML = `<button id="nav-refresh-btn" class="green-btn" onclick="refresh()">Refresh</button>`;
         }
-        } catch (error) {
+    } catch (error) {
                 console.error("Error loading navbar:", error);
     }
 }

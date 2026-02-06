@@ -3,6 +3,7 @@ package com.example.ecom.security.service;
 import com.example.ecom.dtos.LoginUserDto;
 import com.example.ecom.dtos.RegisterUserDto;
 import com.example.ecom.entity.User;
+import com.example.ecom.exception.UsernameExistsException;
 import com.example.ecom.repo.UserRepo;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -27,6 +28,9 @@ public class AuthenticationService {
     }
 
     public User signup(RegisterUserDto input) {
+        if(userRepo.existsByUsername(input.getUsername())){
+            throw new UsernameExistsException(input.getUsername() + "is already taken!");
+        }
         User user = new User();
                 user.setUsername(input.getUsername());
                 user.setPassword(passwordEncoder.encode(input.getPassword()));

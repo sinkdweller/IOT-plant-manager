@@ -37,12 +37,16 @@ public class SecurityConfig {
         .csrf(csrf -> csrf.disable()) 
         
         .authorizeHttpRequests(auth -> auth
-            .requestMatchers("/login.html", "/dashboard.html", "/index.html").permitAll()
+            .requestMatchers("/login.html", "/dashboard.html", "/index.html", "/register-device.html").permitAll()
             .requestMatchers("/auth/**").permitAll()
             .requestMatchers("/h2-console/**").permitAll()
             .requestMatchers("/testEnd").permitAll()
             .requestMatchers("/api/**").authenticated() 
             .anyRequest().authenticated()
+        )
+        .formLogin(form -> form
+            .loginPage("/login.html")
+            .permitAll()
         )
         .headers(headers -> headers.frameOptions(frame -> frame.sameOrigin()))
         

@@ -1,5 +1,5 @@
 package com.example.ecom.controller;
-
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -8,10 +8,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import com.example.ecom.entity.User;
+import com.example.ecom.responses.OwnedDeviceResponse;
 import com.example.ecom.dtos.ClaimDeviceDto;
 import com.example.ecom.entity.Device;
 import com.example.ecom.repo.DeviceRepo;
 import com.example.ecom.repo.UserRepo;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
 
 @RestController
 public class DeviceController {
@@ -20,6 +24,17 @@ public class DeviceController {
     public DeviceController(DeviceRepo deviceRepo, UserRepo userRepo){
         this.deviceRepo=deviceRepo;
         this.userRepo=userRepo;
+    }
+    @GetMapping("/api/ownedDevices")
+    public Page<OwnedDeviceResponse> getOwnedDevices(
+        @RequestParam(defaultValue="0") int page,
+        @RequestParam(defaultValue = "10") int size
+    ){  
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        long id = userRepo.findByUsername(username).orElseThrow(()->new RuntimeException("no user found")).getId();
+
+        Pageable pageable = PageRequest.of(page,size);
+        return deviceRepo.findAllByUserId(id, pageable).map(a-> new OwnedDeviceResponse(a.getMacAddress(), a.getName()));
     }
     @DeleteMapping("/remove")
     public ResponseEntity<String> removeDevice(@RequestParam String macAddress){

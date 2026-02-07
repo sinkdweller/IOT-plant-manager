@@ -1,38 +1,6 @@
 <html>
 <head>
-    <style>
-        body {
-            font-family: arial, sans-serif;
-        }
-        table {
-        border-collapse: collapse;
-        width: 100%;
-        }
-
-        td, th {
-        border: 1px solid #dddddd;
-        text-align: left;
-        padding: 8px;
-        }
-
-        tr:nth-child(even) {
-        background-color: #dddddd;
-        }
-        .vertical-contain {
-            margin-left: 20px;
-            margin-right: 20px;
-
-            padding-left:20px;
-            padding-right:20px;
-            align-items: center;
-            display: flex;
-            flex-direction: column;
-        }
-        .horizontal-contain{
-            display: flex;
-            flex-direction: row;
-        }
-    </style>
+    <link rel="stylesheet" href="/style.css">
     <script src="/navloader.js" defer></script>
 </head>
 <body>
@@ -43,12 +11,11 @@
         <table id="dashboard-table">
             <thead> 
                 <tr>
-                <th>Device</th>
-                <th>Temperature</th>
-                <th>Soil Moisture</th>
-                <th>Captured At</th>
-
-            </tr>
+                    <th>Device</th>
+                    <th>Temperature</th>
+                    <th>Soil Moisture</th>
+                    <th>Captured At</th>
+                </tr>
             </thead>
             <tbody id="dashboard-table-body">
 

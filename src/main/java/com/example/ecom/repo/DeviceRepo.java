@@ -6,14 +6,13 @@ import jakarta.transaction.Transactional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
-
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import java.util.Optional;
 
 public interface DeviceRepo extends JpaRepository<Device, Long> {
 
-    List<Device> findAllByUserId(Long userId);
-    
+    Page<Device> findAllByUserId(Long userId, Pageable pageable);    
     Optional<Device> findByMacAddress(String macAddress);
     @Transactional
     @Modifying

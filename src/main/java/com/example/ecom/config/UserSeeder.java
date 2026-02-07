@@ -41,7 +41,7 @@ public class UserSeeder implements CommandLineRunner{
             userRepo.save(user);
             System.out.println("Database seeded with Username: " + initUsername + " Password: " + initPassword);
             
-            //SEED DEVICE
+            //SEED DEVICE (s)
             Device device = new Device();
             device.setUser(user);
             device.setMacAddress(initMacAddress);
@@ -50,6 +50,11 @@ public class UserSeeder implements CommandLineRunner{
             deviceRepo.save(device); 
             System.out.println("Device '" + initDevice + "' seeded for user: " + initUsername);
 
+            Device device2 = new Device();
+            device.setUser(user);
+            device.setMacAddress("device2MacAddress");
+            device.setName("device2");
+            deviceRepo.save(device2);
             //SEED SENSOR READINGS
             for(int i=0; i<25; i++){
                 SensorReading reading = new SensorReading();

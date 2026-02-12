@@ -1,6 +1,7 @@
 package com.example.ecom.controller;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,10 +11,15 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.example.ecom.entity.Device;
+import com.example.ecom.entity.PendClaims;
 import com.example.ecom.repo.DeviceRepo;
 import com.example.ecom.dtos.TelemetryDTO;
+import com.example.ecom.dtos.PendClaimDto;
+
 import com.example.ecom.entity.SensorReading;
 import com.example.ecom.repo.SensorReadingRepo;
+import com.example.ecom.repo.PendClaimsRepo;
+
 import jakarta.transaction.Transactional;
 
 @RestController
@@ -22,9 +28,30 @@ public class TelemetryController {
 
     private SensorReadingRepo sensorReadingRepo;
     private DeviceRepo deviceRepo;
-    public TelemetryController(SensorReadingRepo sensorReadingRepo, DeviceRepo deviceRepo){
+    private PendClaimsRepo pendClaimsRepo;
+    public TelemetryController(SensorReadingRepo sensorReadingRepo, DeviceRepo deviceRepo, PendClaimsRepo pendClaimsrepo){
         this.sensorReadingRepo=sensorReadingRepo;
         this.deviceRepo = deviceRepo;
+        this.pendClaimsRepo=pendClaimsrepo;
+    }
+    @PostMapping("pendClaim")
+    public ResponseEntity<String> pendClaim(@RequestBody PendClaimDto dto){
+        Optional<PendClaims> existing = pendClaimsRepo.findByMacAddress(dto.getMacAddress());
+            
+            PendClaims claimToSave;
+            if (existing.isPresent()) {
+                // Update the code if the device rebooted or regenerated it
+                claimToSave = existing.get();
+                claimToSave.setGeneratedCode(dto.getGeneratedCode());
+            } else {
+                // Create a new record
+                claimToSave = new PendClaims();
+                claimToSave.setMacAddress(dto.getMacAddress());
+                claimToSave.setGeneratedCode(dto.getGeneratedCode());
+            }
+
+            pendClaimsRepo.save(claimToSave);
+            return ResponseEntity.ok("Claim request registered! Awaiting user verification");
     }
 
     @PostMapping("/upload")

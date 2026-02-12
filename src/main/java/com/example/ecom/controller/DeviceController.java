@@ -11,21 +11,26 @@ import com.example.ecom.entity.User;
 import com.example.ecom.responses.OwnedDeviceResponse;
 import com.example.ecom.dtos.ClaimDeviceDto;
 import com.example.ecom.entity.Device;
+import com.example.ecom.entity.PendClaims;
 import com.example.ecom.repo.DeviceRepo;
 import com.example.ecom.repo.UserRepo;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.PageRequest;
-
+import org.springframework.web.bind.annotation.RequestMapping;
+import com.example.ecom.repo.PendClaimsRepo;
+@RequestMapping("/api")
 @RestController
 public class DeviceController {
     private final DeviceRepo deviceRepo;
     private final UserRepo userRepo;
-    public DeviceController(DeviceRepo deviceRepo, UserRepo userRepo){
+    private final PendClaimsRepo pendClaimsRepo;
+    public DeviceController(DeviceRepo deviceRepo, UserRepo userRepo, PendClaimsRepo pendClaimsRepo){
+        this.pendClaimsRepo=pendClaimsRepo;
         this.deviceRepo=deviceRepo;
         this.userRepo=userRepo;
     }
-    @GetMapping("/api/ownedDevices")
+    @GetMapping("/ownedDevices")
     public Page<OwnedDeviceResponse> getOwnedDevices(
         @RequestParam(defaultValue="0") int page,
         @RequestParam(defaultValue = "10") int size
@@ -65,9 +70,13 @@ public class DeviceController {
             .orElseThrow(() -> new RuntimeException("User not found in DB"));
         System.out.println("Found User ID: " + currentUser.getId());
 
+        PendClaims pendingClaim = pendClaimsRepo.findByMacAddress(dto.getMacAddress()).orElseThrow(()-> new RuntimeException("This device hasn't initiated a claim request yet!"));
+        if (!pendingClaim.getGeneratedCode().equals(dto.getGeneratedCode())) {
+        return ResponseEntity.status(403).body("Invalid Setup Code.");
+        }
         Device device = deviceRepo.findByMacAddress(dto.getMacAddress())
             .orElseGet(() -> {
-                System.out.println("Creating brand new device record");
+                System.out.println("Creating brand new device record.");
                 Device d = new Device();
                 d.setMacAddress(dto.getMacAddress());
                 return d;
@@ -80,8 +89,10 @@ public class DeviceController {
 
         device.setName(dto.getName());
         device.setUser(currentUser);
-        
         deviceRepo.save(device);
+
+        //Remove pending claim from device repository.
+        pendClaimsRepo.delete(pendingClaim);
 
         return ResponseEntity.ok("Device added!");
     }

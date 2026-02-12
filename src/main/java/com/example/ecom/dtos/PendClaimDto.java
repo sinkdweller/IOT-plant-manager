@@ -4,10 +4,7 @@ import lombok.Data;
 
 @Data                 // Generates getters, setters, toString, equals, and hashCode
 @AllArgsConstructor
-public class ClaimDeviceDto {
-    
+public class PendClaimDto {
     private String macAddress;
     private String generatedCode;
-    private String name;
-    
 }

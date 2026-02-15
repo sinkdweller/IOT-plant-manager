@@ -1,9 +1,9 @@
 #include <WiFiManager.h>
 #include <HTTPClient.h>
 
-// Variables for timing
-unsigned long last_time = 0;
-unsigned long timerDelay = 3000;  //three seconds
+#define BUTTON 22
+#define LED 23
+
 
 String deviceSecret = "PLANT-99-XZ"; 
 String mac;
@@ -11,9 +11,11 @@ String mac;
 void setup() {
     Serial.begin(115200);
     delay(1000); // Give Serial time to initialize
-        
-    WiFiManager wifiManager;
 
+    pinMode(BUTTON, INPUT_PULLUP);
+    pinMode(LED, OUTPUT);
+    
+    WiFiManager wifiManager;
     // This will block until connected or timed out
     bool res = wifiManager.autoConnect("ESP32_Setup_Portal"); 
 
@@ -25,11 +27,24 @@ void setup() {
         mac = WiFi.macAddress();
         Serial.println("Connected to Wi-Fi!");
         Serial.println("Your Mac address is: " + mac);
-        Serial.println("Target Server: http://192.168.50.10:8080");
     }
 }
+//claim Logic
+bool sentClaimRequest = false;
+//Button logic
+unsigned int debounceTime = 50;
+bool lastStableState = HIGH;
+unsigned long lastDebounceTime = 0;
+bool lastFlickerState = HIGH;
+bool buttonState;
 
-bool hasClaimed = false;
+//Upload Logic
+unsigned long lastTimeSent = 0;
+unsigned long timerDelay = 3000;  //three seconds
+
+unsigned long futureLedOffTime;
+unsigned long successLedDuration = 1000;
+unsigned long failureLedDuration = 50;
 
 void loop() {
   if (WiFi.status() == WL_CONNECTED) {
@@ -38,26 +53,56 @@ void loop() {
     if (mac == "") {
       mac = WiFi.macAddress();
     }
+    
+    //CLAIM logic
+    if(!sentClaimRequest){
+      buttonState = digitalRead(BUTTON);
 
-    // Send Claim once
-    if (!hasClaimed && mac != "") {
-      Serial.println("Sending claim...");
-      sendPostRequest("/api/device/pendClaim", "{\"macAddress\":\"" + mac + "\", \"generatedCode\":\"" + deviceSecret + "\"}");
-      hasClaimed = true;
-      last_time = millis(); 
+      //handle flicker
+      if(buttonState != lastFlickerState){
+        lastFlickerState = buttonState;
+        lastDebounceTime = millis();
+      }
+
+      if(millis()-lastDebounceTime > debounceTime){
+        if(lastStableState==HIGH && buttonState==LOW){
+          //Send claim request if button is pressed
+          Serial.println("Sending claim...");
+          int httpResponse = sendPostRequest("/api/device/pendClaim", "{\"macAddress\":\"" + mac + "\", \"generatedCode\":\"" + deviceSecret + "\"}");
+          if(httpResponse ==200){
+            sentClaimRequest = true;
+          }
+          
+          lastTimeSent = millis(); 
+        }
+        lastStableState = buttonState;
+          
+      }
     }
-
-    if ((millis() - last_time) > timerDelay) {
-      last_time = millis();
-      String jsonPayload = "{\"macAddress\":\"" + mac + "\",\"temperature\":25.5,\"soilMoisture\":42}";
-      sendPostRequest("/api/device/upload", jsonPayload);
+    
+    //UPLOAD logic + short polling
+    if(sentClaimRequest){
+      if ((millis() - lastTimeSent) > timerDelay) {
+        lastTimeSent = millis();
+        String jsonPayload = "{\"macAddress\":\"" + mac + "\",\"temperature\":25.5,\"soilMoisture\":42}";
+        int httpResponse = sendPostRequest("/api/device/upload", jsonPayload);
+        
+        //SHORT BLIPS = PENDING CLAIM, LONG BLIP = SUCCESSFUL DATA UPLOAD
+        unsigned long visualSuccessFeedback = (httpResponse==200)?successLedDuration:failureLedDuration;
+        futureLedOffTime = millis()+ visualSuccessFeedback;
+        digitalWrite(LED, HIGH);
+      }
+      //Turn OFF light if it's on and overdue
+      if(digitalRead(LED)==HIGH && millis()>futureLedOffTime){
+        digitalWrite(LED, LOW);
+      }
     }
   }
-  yield(); 
+  yield(); //prevent watchdog
 }
 
-void sendPostRequest(String endpoint, String payload) {
-    if (WiFi.status() != WL_CONNECTED) return;
+int sendPostRequest(String endpoint, String payload) {
+    if (WiFi.status() != WL_CONNECTED) return -1;
 
     HTTPClient http;
     String url = "http://192.168.50.10:8080" + endpoint;
@@ -78,5 +123,6 @@ void sendPostRequest(String endpoint, String payload) {
     }
     
     http.end();
-    yield(); 
+    return httpResponseCode;
+
 }

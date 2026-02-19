@@ -1,6 +1,6 @@
 # Project Overview # I'm not done yet wait 
 
-This is a mock project for a smart plant-monitoring system you can implement at home. It has the added benefit of detecting housefires! Using modified esp-32 as devices, users are able to register/login to an account to access a jwt authenticated dashboard + device managing/registering page.
+This is a mock project for a smart plant-monitoring system you can implement at home. Using esp-32 as devices, users are able to register/login to an account to access a jwt authenticated dashboard + device managing/registering page.
 Currently the app is hosted locally (docker image is being worked on) so there is a need to enter local server ip address when registering a new monitoring device. The app is initialized with a few mock entities to play with,
 but you can add your own. Why did I implement user security if I plan on keeping everything local? for fun
 

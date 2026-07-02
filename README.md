@@ -45,10 +45,3 @@ Spring security is implemented to issue jwt tokens for user authentication, so a
 
 # Demo: 
 https://drive.google.com/file/d/12KQ0Ynb4koXozoYHKwrTiuFtvLDfJ9y8/view?usp=sharing
-
-# maybe future features
-- There is backend logic for removing devices, but no interface for users to relocate their devices yet, since all devices have a many to one mapping to users and are only visible to one person. Possibly in the future make it so that a device is visible to multiple users based on different levels of authority.
-- <br>
-- Similarily there is logic for displaying all the devices a user may own, although the dashboard is still being worked on.
-- Might implement a future feature that lets a user delete their account. 
-- Currently device uses HTTP protocol to communicate with server, but may migrate to MQTT for better battery and possibly event driven functions in the future
